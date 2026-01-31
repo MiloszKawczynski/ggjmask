@@ -1,24 +1,30 @@
-scr_topDownMovement();
+var wantedToMove = scr_topDownMovement();
 
 rope[0].xx = x;
 rope[0].yy = y;
 
 updatePreviousPosisiton();
 
-repeat (4) 
+repeat (10) 
 {
     pullTo(x, y);
     pullBackTo(o_bed.x, o_bed.y)
     solveRopeCollisions();
 }
 
-x = rope[0].xx;
-y = rope[0].yy;
+solveKidRopeCollisions();
+
+if (place_meeting(x, y, o_collision))
+{
+    image_blend = c_red;
+}
+else 
+{
+	image_blend = c_white;
+}
 
 if (mouse_check_button_pressed(mb_left))
 {
-    x = mouse_x;
-    y = mouse_y;
-    
-    room_restart();
+    x = rope[1].xx;
+    y = rope[1].yy;
 }

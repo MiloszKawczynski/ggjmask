@@ -34,6 +34,8 @@ function scr_topDownMovement()
     speed = min(maximumSpeed, speed);
 	
 	scr_topDownCollision();
+    
+    return abs(desiredHorizontalDirection) || abs(desiredVerticalDirection)
 }
 
 function scr_topDownCollision()
