@@ -1,6 +1,3 @@
-deceleration = 0.25;
-maximumSpeed = 3;
-
 myConnections = array_create();
 
 for(var i = 0; i < instance_number(o_leverDool); i++)
@@ -12,4 +9,4 @@ for(var i = 0; i < instance_number(o_leverDool); i++)
     }
 }
 
-range *= 200;
+ratio = 0;

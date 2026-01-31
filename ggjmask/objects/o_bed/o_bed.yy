@@ -3,7 +3,6 @@
   "%Name":"o_bed",
   "eventList":[
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":8,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
   "name":"o_bed",
@@ -31,8 +30,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"s_block",
-    "path":"sprites/s_block/s_block.yy",
+    "name":"s_bed",
+    "path":"sprites/s_bed/s_bed.yy",
   },
   "spriteMaskId":null,
   "visible":true,

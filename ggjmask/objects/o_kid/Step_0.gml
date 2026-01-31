@@ -25,11 +25,12 @@ repeat (10)
     solveRopeCollisions();
     pullBackTo(o_bed.x, o_bed.y)
     solveRopeCollisions();
+    ropeInteraction();
 }
 
 solveKidRopeCollisions();
 
-if (place_meeting(x, y, o_collision))
+if (place_meeting(x, y, o_collisionParent))
 {
     image_blend = c_red;
 }

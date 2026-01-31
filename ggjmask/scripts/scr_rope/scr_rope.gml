@@ -118,14 +118,9 @@ function solveRopeCollisions()
     {
         var ropePoint = rope[i];
         
-        if (!collision_point(ropePoint.xx, ropePoint.yy, o_collision, true, true))
+        if (!collision_point(ropePoint.xx, ropePoint.yy, o_collisionParent, true, true))
         {
             continue;
-        }
-        
-        if (instance_place(ropePoint.xx, ropePoint.yy, o_lever))
-        {
-            instance_nearest(ropePoint.xx, ropePoint.yy, o_lever).isPulled = true;
         }
         
         var tnx = 0;
@@ -149,17 +144,17 @@ function solveRopeCollisions()
         
         for (var s = 0; s <= steps; s++)
         {
-            if (collision_point(cx, cy, o_collision, true, true))
+            if (collision_point(cx, cy, o_collisionParent, true, true))
             {
                 ropePoint.xx = cx - sx;
                 ropePoint.yy = cy - sy;
                 
-                if (!collision_point(ropePoint.px + dx + tnx, ropePoint.py, o_collision, true, true))
+                if (!collision_point(ropePoint.px + dx + tnx, ropePoint.py, o_collisionParent, true, true))
                 {
                     ropePoint.xx = ropePoint.px + dx + tnx;
                     ropePoint.yy = ropePoint.py;
                 }
-                else if (!collision_point(ropePoint.px, ropePoint.py + dy + tny, o_collision, true, true))
+                else if (!collision_point(ropePoint.px, ropePoint.py + dy + tny, o_collisionParent, true, true))
                 {
                     ropePoint.xx = ropePoint.px;
                     ropePoint.yy = ropePoint.py + dy + tny;
@@ -173,11 +168,42 @@ function solveRopeCollisions()
     }
 }
 
+function ropeInteraction(force)
+{
+    for (var i = 0; i < ropeArrayLength; i++)
+    {
+        var ropePoint = rope[i];
+        if (instance_place(ropePoint.xx, ropePoint.yy, o_lever))
+        {
+            with(instance_nearest(ropePoint.xx, ropePoint.yy, o_lever))
+            {
+                hspeed += sign(x - ropePoint.xx);
+                vspeed += sign(y - ropePoint.yy);
+                //hspeed += force.xf;
+                //vspeed += force.yf;
+            }
+        }
+        
+        if (collision_circle(ropePoint.xx, ropePoint.yy, 5, o_crate, true, true))
+        {
+            with(instance_nearest(ropePoint.xx, ropePoint.yy, o_crate))
+            {
+                //hspeed = force.xf;
+                //vspeed = force.yf;
+                
+                hspeed += sign(x - ropePoint.xx);
+                vspeed += sign(y - ropePoint.yy);
+                scr_topDownCollision();
+            }
+        }
+    }
+}
+
 function solveKidRopeCollisions()
 {
     var ropePoint = rope[0];
     
-    if (!place_meeting(ropePoint.xx, ropePoint.yy, o_collision))
+    if (!place_meeting(ropePoint.xx, ropePoint.yy, o_collisionParent))
     {
         x = ropePoint.xx;
         y = ropePoint.yy;
@@ -203,12 +229,12 @@ function solveKidRopeCollisions()
     
     for (var i = 0; i < steps; i++)
     {
-        if (!place_meeting(x + xStep, y, o_collision))
+        if (!place_meeting(x + xStep, y, o_collisionParent))
         {
             x += xStep;
         }
         
-        if (!place_meeting(x, y + yStep, o_collision))
+        if (!place_meeting(x, y + yStep, o_collisionParent))
         {
             y += yStep;
         }
@@ -228,40 +254,19 @@ function getRopeLength()
     return totalRopeLength;
 }
 
-function fixRopeClipping()
+function getRopeForce()
 {
-    var isAnyClipped = false;
-    for (var i = 0; i < ropeArrayLength - 1; i++)
+    var xForce = 0;
+    var yForce = 0;
+    for (var i = 0; i < ropeArrayLength; i++)
     {
-        var p1 = rope[i];
-        var p2 = rope[i + 1];
-        
-        if (collision_line(p1.xx, p1.yy, p2.xx, p2.yy, o_collision, true, true))
-        {
-            //isAnyClipped = true;
-            //pullNode(i, p2.xx, p2.yy);
-            //pullNode(i + 1, p1.xx, p1.yy);
-            
-            
-            
-            break;
-        }
+        xForce += rope[i].xx - rope[i].px;
+        yForce += rope[i].yy - rope[i].py;
     }
     
-    //if (isAnyClipped)
-    //{
-        //var is
-        //for (var i = 0; i < ropeArrayLength - 1; i++)
-        //{
-            //var p1 = rope[i];
-            //var p2 = rope[i + 1];
-            //
-            //if (collision_line(p1.xx, p1.yy, p2.xx, p2.yy, o_collision, true, true))
-            //{
-                //isAnyClipped = true;
-                //break;
-            //}
-        //}
-    //}
+    xForce += x - xprevious;
+    yForce += y - yprevious;
+    
+    return {xf: xForce, yf: yForce};
 }
 

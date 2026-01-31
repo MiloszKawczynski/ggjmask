@@ -55,11 +55,11 @@ function scr_topDownMovement()
 
 function scr_topDownCollision()
 {	
-    if (place_meeting(x + hspeed, y, o_collision))
+    if (place_meeting(x + hspeed, y, o_collisionParent))
 	{
-        if (!place_meeting(x + sign(hspeed), y, o_collision))
+        if (!place_meeting(x + sign(hspeed), y, o_collisionParent))
 		{
-			while (!place_meeting(x + sign(hspeed), y, o_collision))
+			while (!place_meeting(x + sign(hspeed), y, o_collisionParent))
 			{
 				x += sign(hspeed);
 			}
@@ -68,11 +68,11 @@ function scr_topDownCollision()
         hspeed = 0;
 	}
     
-    if (place_meeting(x, y + vspeed, o_collision))
+    if (place_meeting(x, y + vspeed, o_collisionParent))
 	{
-        if (!place_meeting(x, y + sign(vspeed), o_collision))
+        if (!place_meeting(x, y + sign(vspeed), o_collisionParent))
 		{
-			while (!place_meeting(x, y + sign(vspeed), o_collision))
+			while (!place_meeting(x, y + sign(vspeed), o_collisionParent))
 			{
 				y += sign(vspeed);
 			}
@@ -81,11 +81,11 @@ function scr_topDownCollision()
         vspeed = 0;
 	}
     
-    if (place_meeting(x + hspeed, y + vspeed, o_collision))
+    if (place_meeting(x + hspeed, y + vspeed, o_collisionParent))
 	{
-        if (!place_meeting(x + sign(hspeed), y + sign(vspeed), o_collision))
+        if (!place_meeting(x + sign(hspeed), y + sign(vspeed), o_collisionParent))
 		{
-			while (!place_meeting(x + sign(hspeed), y + sign(vspeed), o_collision))
+			while (!place_meeting(x + sign(hspeed), y + sign(vspeed), o_collisionParent))
 			{
 				x += sign(hspeed);
 				y += sign(vspeed);
