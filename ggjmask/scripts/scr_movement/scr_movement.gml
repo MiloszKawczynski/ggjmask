@@ -1,8 +1,23 @@
+function scr_overrideTopDownMovement()
+{	
+    hspeed = 0;
+    vspeed = 0;
+}
+
+function scr_topDownKeyboard()
+{	
+    desiredHorizontalDirection = keyboard_check(ord("D")) - keyboard_check(ord("A"));
+	desiredVerticalDirection = keyboard_check(ord("S")) - keyboard_check(ord("W"));
+}
+
+function scr_topDownToPoint(xx, yy)
+{	
+    desiredHorizontalDirection = sign(xx - x);
+	desiredVerticalDirection = sign(yy - y);
+}
+
 function scr_topDownMovement()
 {	
-    var desiredHorizontalDirection = keyboard_check(vk_right) - keyboard_check(vk_left);
-	var desiredVerticalDirection = keyboard_check(vk_down) - keyboard_check(vk_up);
-     
 	hspeed += desiredHorizontalDirection * acceleration;
 	vspeed += desiredVerticalDirection * acceleration;
 	
