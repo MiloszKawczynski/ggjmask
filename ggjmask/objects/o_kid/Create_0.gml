@@ -19,3 +19,6 @@ debugY = 0;
 
 ropeColor = make_color_rgb(141, 171, 229);
 ropeOutlineColor = make_color_rgb(36, 133, 153);
+
+pulseTimer = 0;
+surf = surface_create(room_width, room_height);

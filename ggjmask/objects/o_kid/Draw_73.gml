@@ -1,31 +1,26 @@
-draw_set_color(c_black);
-draw_set_font(f_font);
-//draw_text(x, y - 200, fps_real);
-draw_self();
-
-for (var i = 0; i < ropeArrayLength; i++)
+var pulse = lerp(-25, ropeArrayLength + 25, pulseTimer);
+pulseTimer = lerp(pulseTimer, 0, 0.05);
+if (pulseTimer < 0.01)
 {
-    var ropePoint = rope[i];
-    
-    if (i > 0)
-    {
-        var ropeConnection = rope[i].connectsForward;
-        var ropeConnection2 = rope[i].connectsForward.connectsForward;
-        draw_set_color(ropeOutlineColor)
-        if (ropeConnection2 != undefined)
-        {
-            draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection2.xx, ropeConnection2.yy, lerp(30, 12, i / ropeArrayLength));
-        }
-        draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection.xx, ropeConnection.yy, lerp(30, 17, i / ropeArrayLength));
-        draw_set_color(ropeColor)
-        if (ropeConnection2 != undefined)
-        {
-            draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection2.xx, ropeConnection2.yy, lerp(25, 12, i / ropeArrayLength));
-        }
-        draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection.xx, ropeConnection.yy, lerp(25, 12, i / ropeArrayLength));
-    }
-    
-    draw_set_color(c_red)
-    //draw_circle(ropePoint.xx, ropePoint.yy, 14, false);
+    pulseTimer = 1;
 }
-//draw_sprite(s_kid, 0, debugX, debugY);
+
+surface_set_target(surf);
+draw_clear_alpha(c_black, 0);
+drawRope(floor(pulse), floor(pulse) + 20, true)
+var pulse = lerp(-25, ropeArrayLength + 25, pulseTimer - pulseTimer * 0.5);
+drawRope(floor(pulse), floor(pulse) + 20, true)
+//drawRope(floor(pulse), floor(pulse) + 10 + 25, true)
+surface_reset_target();
+
+draw_set_alpha(1);
+draw_self();
+drawRope()
+
+shader_set(shd_glow);
+var tex = surface_get_texture(surf);
+var u_texel = shader_get_uniform(shd_glow, "u_texel");
+shader_set_uniform_f(u_texel, texture_get_texel_width(tex), texture_get_texel_height(tex));
+shader_set_uniform_f(shader_get_uniform(shd_glow,"u_strength"), 0.75);
+draw_surface_ext(surf, 0, 0, 1, 1, 0, c_white, 1);
+shader_reset();

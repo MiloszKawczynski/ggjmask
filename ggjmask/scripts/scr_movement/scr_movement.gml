@@ -53,7 +53,7 @@ function scr_topDownMovement()
     return abs(desiredHorizontalDirection) || abs(desiredVerticalDirection)
 }
 
-function scr_topDownCollision()
+function scr_topDownCollision(bounce = false)
 {	
     if (place_meeting(x + hspeed, y, o_collisionParent))
 	{
@@ -65,7 +65,14 @@ function scr_topDownCollision()
 			}
 		}
         
-        hspeed = 0;
+        if (bounce)
+        {
+            hspeed *= -1;
+        }
+        else 
+        {
+            hspeed = 0;
+        }
 	}
     
     if (place_meeting(x, y + vspeed, o_collisionParent))
@@ -78,7 +85,14 @@ function scr_topDownCollision()
 			}
 		}
         
-        vspeed = 0;
+        if (bounce)
+        {
+            vspeed *= -1;
+        }
+        else 
+        {
+            vspeed = 0;
+        }
 	}
     
     if (place_meeting(x + hspeed, y + vspeed, o_collisionParent))
@@ -92,7 +106,15 @@ function scr_topDownCollision()
 			}
 		}
         
-        hspeed = 0;
-        vspeed = 0;
+        if (bounce)
+        {
+            hspeed = 0;
+            vspeed = 0;
+        }
+        else 
+        {
+        	hspeed *= -1;
+            vspeed *= -1;
+        }
 	}
 }

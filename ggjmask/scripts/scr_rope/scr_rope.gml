@@ -184,7 +184,7 @@ function ropeInteraction(force)
             }
         }
         
-        if (collision_circle(ropePoint.xx, ropePoint.yy, 5, o_crate, true, true))
+        if (collision_circle(ropePoint.xx, ropePoint.yy, 2, o_crate, true, true))
         {
             with(instance_nearest(ropePoint.xx, ropePoint.yy, o_crate))
             {
@@ -270,3 +270,45 @@ function getRopeForce()
     return {xf: xForce, yf: yForce};
 }
 
+
+
+function drawRope(from = 0, to = ropeArrayLength, shader = false)
+{
+    for (var i = 0; i < ropeArrayLength; i++)
+    {
+        var ropePoint = rope[i];
+        var halfPoint = (to - from) / 2;
+        
+        draw_set_alpha(1 - shader);
+        if (i >= from and i <= to and shader)
+        {
+            if (i < halfPoint)
+            {
+                draw_set_alpha(lerp(0, 1, (i - from) / (halfPoint - from)))
+            }
+            else 
+            {
+            	draw_set_alpha(lerp(1, 0, (i - halfPoint) / (to - halfPoint)))
+            }
+        }
+        
+        if (i > 0)
+        {
+            var ropeConnection = rope[i].connectsForward;
+            var ropeConnection2 = rope[i].connectsForward.connectsForward;
+            draw_set_color(ropeOutlineColor)
+            if (ropeConnection2 != undefined)
+            {
+                draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection2.xx, ropeConnection2.yy, lerp(30, 12, i / ropeArrayLength));
+            }
+            draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection.xx, ropeConnection.yy, lerp(30, 17, i / ropeArrayLength));
+            draw_set_color(ropeColor)
+            if (ropeConnection2 != undefined)
+            {
+                draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection2.xx, ropeConnection2.yy, lerp(25, 12, i / ropeArrayLength));
+            }
+            draw_line_width(ropePoint.xx, ropePoint.yy, ropeConnection.xx, ropeConnection.yy, lerp(25, 12, i / ropeArrayLength));
+        }
+    }
+    draw_set_alpha(1);
+}
