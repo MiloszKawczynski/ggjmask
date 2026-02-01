@@ -16,5 +16,9 @@ for (var i = 0; i < array_length(myConnections); i++)
         var yr = lengthdir_y(range * 200, dir);
         x = lerp(xstart, xstart + xr, ratio);
         y = lerp(ystart, ystart + yr, ratio);
+        with(o_kid)
+        {
+            solveRopeCollisions();
+        }
     }
 }

@@ -4,10 +4,10 @@ function addRopeNodes(numberOfNodes)
     {
     	array_push(rope,
         {
-            px: o_bed.x,
-            py: o_bed.y,
-            xx: o_bed.x,
-            yy: o_bed.y,
+            px: homeBed.x,
+            py: homeBed.y,
+            xx: homeBed.x,
+            yy: homeBed.y,
             connectsForward: undefined,
             connectsBackward: undefined,
             isLock: false
@@ -37,7 +37,7 @@ function addRopeNodes(numberOfNodes)
     
     ropeAnchor = rope[ropeArrayLength - 1];
     
-    pullBackTo(o_bed.x, o_bed.y);
+    pullBackTo(homeBed.x, homeBed.y);
 }
 
 function updatePreviousPosisiton()
@@ -168,32 +168,134 @@ function solveRopeCollisions()
     }
 }
 
-function ropeInteraction(force)
+function ropeInteraction(centers)
 {
+    var force = getRopeForce();
     for (var i = 0; i < ropeArrayLength; i++)
     {
         var ropePoint = rope[i];
-        if (instance_place(ropePoint.xx, ropePoint.yy, o_lever))
+        if (collision_circle(ropePoint.xx, ropePoint.yy, 5, o_lever, true, true))
         {
-            with(instance_nearest(ropePoint.xx, ropePoint.yy, o_lever))
+            var inst = instance_nearest(ropePoint.xx, ropePoint.yy, o_lever);
+            var ifAny = false;
+            
+            for (var j = 0; j < array_length(centers); j++)
             {
-                hspeed += sign(x - ropePoint.xx);
-                vspeed += sign(y - ropePoint.yy);
-                //hspeed += force.xf;
-                //vspeed += force.yf;
+                if (collision_point(centers[j].x, centers[j].y, inst, true, true))
+                {
+                    ifAny = true;
+                    break;
+                }
+            }
+            
+            if (ifAny)
+            {
+                with(inst)
+                {
+                    //hspeed = 0;
+                    //vspeed = 0;
+                    //
+                    //var p1 = centers[j].p1;
+                    //var p2 = centers[j].p2;
+                    //
+                    //var p12 = centers[j].p1.connectsForward;
+                    //var p22 = centers[j].p2.connectsBackward;
+                    //
+                    //var v1x = p12.xx - p1.xx;
+                    //var v2x = p22.xx - p2.xx;
+                    //
+                    //var v1y = p12.yy - p1.yy;
+                    //var v2y = p22.yy - p2.yy;
+                    //
+                    //hspeed = v1x + v2x;
+                    //vspeed = v1y + v2y;
+                    
+                    hspeed = other.x - centers[j].x;
+                    vspeed = other.y - centers[j].y;
+                }
+            }
+            else 
+            {
+                with(inst)
+                {
+                    hspeed += sign(x - ropePoint.xx);
+                    vspeed += sign(y - ropePoint.yy);
+                }
             }
         }
         
-        if (collision_circle(ropePoint.xx, ropePoint.yy, 2, o_crate, true, true))
+        if (collision_circle(ropePoint.xx, ropePoint.yy, 5, o_crate, true, true))
         {
-            with(instance_nearest(ropePoint.xx, ropePoint.yy, o_crate))
+            var inst = instance_nearest(ropePoint.xx, ropePoint.yy, o_crate);
+            var ifAny = false;
+            
+            for (var j = 0; j < array_length(centers); j++)
             {
-                //hspeed = force.xf;
-                //vspeed = force.yf;
-                
-                hspeed += sign(x - ropePoint.xx);
-                vspeed += sign(y - ropePoint.yy);
-                scr_topDownCollision();
+                if (collision_point(centers[j].x, centers[j].y, inst, true, true))
+                {
+                    ifAny = true;
+                    break;
+                }
+            }
+            
+            if (ifAny)
+            {
+                with(inst)
+                {
+                    hspeed = 0;
+                    vspeed = 0;
+                    
+                    var p1 = centers[j].p1;
+                    var p2 = centers[j].p2;
+                    
+                    var p12 = centers[j].p1.connectsForward;
+                    var p22 = centers[j].p2.connectsBackward;
+                    
+                    var v1x = p12.xx - p1.xx;
+                    var v2x = p22.xx - p2.xx;
+                    
+                    var v1y = p12.yy - p1.yy;
+                    var v2y = p22.yy - p2.yy;
+                    
+                    hspeed = v1x + v2x;
+                    vspeed = v1y + v2y;
+                    scr_topDownCollision();
+                }
+            }
+            else 
+            {
+                with(inst)
+                {
+                    hspeed += sign(x - ropePoint.xx);
+                    vspeed += sign(y - ropePoint.yy);
+                    scr_topDownCollision();
+                }
+            }
+        }
+        
+        var inst = instance_nearest(ropePoint.xx, ropePoint.yy, o_bed);
+        var ifAny = false;
+        
+        for (var j = 0; j < array_length(centers); j++)
+        {
+            if (collision_point(centers[j].x, centers[j].y, inst, true, true) and centers[j].count > 15)
+            {
+                ifAny = true;
+                break;
+            }
+        }
+        
+        if (ifAny)
+        {
+            if (homeBed != inst)
+            {
+                for (var j = 0; j < ropeArrayLength; j++)
+                {
+                    rope[j].xx = inst.x;
+                    rope[j].yy = inst.y;
+                }
+                homeBed = inst;
+                pullBackTo(homeBed.x, homeBed.y);
             }
         }
     }
@@ -311,4 +413,68 @@ function drawRope(from = 0, to = ropeArrayLength, shader = false)
         }
     }
     draw_set_alpha(1);
+}
+
+function segment_intersection_point_fast(p1, p2, p3, p4)
+{
+    var x1 = p1.xx, y1 = p1.yy;
+    var x2 = p2.xx, y2 = p2.yy;
+    var x3 = p3.xx, y3 = p3.yy;
+    var x4 = p4.xx, y4 = p4.yy;
+
+    // bounding box early-out
+    if (max(x1,x2) < min(x3,x4)) return undefined;
+    if (max(x3,x4) < min(x1,x2)) return undefined;
+    if (max(y1,y2) < min(y3,y4)) return undefined;
+    if (max(y3,y4) < min(y1,y2)) return undefined;
+
+    var den = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+    if (den == 0) return undefined;
+
+    var t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / den;
+    var u = ((x1-x3)*(y1-y2) - (y1-y3)*(x1-x2)) / den;
+
+    // przecięcie tylko wewnątrz odcinków
+    if (t <= 0 || t >= 1 || u <= 0 || u >= 1) return undefined;
+
+    return {
+        x: x1 + t * (x2 - x1),
+        y: y1 + t * (y2 - y1)
+    };
+}
+
+function loop_center(rope, from_idx, to_idx)
+{
+    var sx = 0, sy = 0;
+    var cnt = to_idx - from_idx + 1;
+
+    for (var k = from_idx; k <= to_idx; k++)
+    {
+        sx += rope[k].xx;
+        sy += rope[k].yy;
+    }
+
+    return { x: sx / cnt, y: sy / cnt, count: to_idx - from_idx, p1: rope[from_idx], p2: rope[to_idx]};
+}
+
+function getLoopsCenters()
+{
+    centers = [];
+    for (var i = 0; i < ropeArrayLength - 1; i++)
+    {
+        var a1 = rope[i];
+        var a2 = rope[i + 1];
+    
+        for (var j = i + 2; j < ropeArrayLength - 1; j++)
+        {
+            var cross = segment_intersection_point_fast(a1, a2, rope[j], rope[j+1]);
+            if (cross != undefined)
+            {
+                var center = loop_center(rope, i + 1, j);
+                array_push(centers, center);
+            }
+        }
+    }
+    
+    return centers;
 }
